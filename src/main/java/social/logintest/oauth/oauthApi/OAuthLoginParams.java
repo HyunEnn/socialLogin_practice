@@ -1,4 +1,4 @@
-package social.logintest.oauthApi;
+package social.logintest.oauth.oauthApi;
 
 import org.springframework.util.MultiValueMap;
 import social.logintest.domain.OAuthProvider;
