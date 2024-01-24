@@ -1,24 +1,25 @@
-package social.logintest.oauth.oauthApi;
+package social.logintest.oauth.oauthApi.params;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import social.logintest.domain.OAuthProvider;
 
-public class NaverLoginParams implements OAuthLoginParams {
+@Getter
+@NoArgsConstructor
+public class KakaoLoginParams implements OAuthLoginParams {
     private String authorizationCode;
-    private String state;
-
 
     @Override
     public OAuthProvider oAuthProvider() {
-        return OAuthProvider.NAVER;
+        return OAuthProvider.KAKAO;
     }
 
     @Override
     public MultiValueMap<String, String> makeBody() {
-        LinkedMultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("code", authorizationCode);
-        body.add("state", state);
         return body;
     }
 }

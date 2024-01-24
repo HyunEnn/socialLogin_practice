@@ -1,4 +1,4 @@
-package social.logintest.tokens;
+package social.logintest.oauth.tokens;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
