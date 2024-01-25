@@ -11,6 +11,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import social.logintest.domain.OAuthProvider;
 import social.logintest.oauth.oauthApi.params.OAuthLoginParams;
+import social.logintest.oauth.oauthApi.params.OAuthLogoutParams;
 import social.logintest.oauth.oauthApi.response.KakaoInfoResponse;
 import social.logintest.oauth.oauthApi.response.OAuthInfoResponse;
 import social.logintest.oauth.tokens.KakaoTokens;
@@ -71,4 +72,12 @@ public class KakaoApiClient implements OAuthApiClient {
 
         return restTemplate.postForObject(url, request, KakaoInfoResponse.class);
     }
+
+    // 사용 안하는 코드
+    @Override
+    public RevokeTokenResponseDto revokeAccessToken(OAuthLogoutParams params) {
+        return null;
+    }
+
+
 }

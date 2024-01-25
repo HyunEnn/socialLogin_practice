@@ -1,11 +1,18 @@
 package social.logintest.oauth.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import social.logintest.oauth.oauthApi.client.RevokeTokenResponseDto;
 import social.logintest.oauth.oauthApi.params.KakaoLoginParams;
 import social.logintest.oauth.oauthApi.params.NaverLoginParams;
+import social.logintest.oauth.oauthApi.params.NaverLogoutParams;
 import social.logintest.oauth.service.OAuthLoginService;
+import social.logintest.oauth.service.OAuthLogoutService;
 import social.logintest.oauth.tokens.AuthTokens;
 
 @RestController
@@ -13,6 +20,15 @@ import social.logintest.oauth.tokens.AuthTokens;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final OAuthLoginService oAuthLoginService;
+    private final OAuthLogoutService oAuthLogoutService;
+    private final RestTemplate restTemplate;
+
+    @Value("${oauth.kakao.url.logout}")
+    private String kakaoLogoutUrl;
+    @Value("${oauth.kakao.client-id}")
+    private String kakaoClientId;
+    @Value("${oauth.kakao.url.redirect}")
+    private String kakaoLogoutRedirectUrl;
 
     @PostMapping("/kakao")
     public ResponseEntity<AuthTokens> loginKakao(@RequestBody KakaoLoginParams params) {
@@ -24,4 +40,34 @@ public class AuthController {
         return ResponseEntity.ok(oAuthLoginService.login(params));
     }
 
+    @PostMapping("/naver/logout")
+    public ResponseEntity<RevokeTokenResponseDto> logoutNaver(@RequestBody NaverLogoutParams params) {
+        return ResponseEntity.ok(oAuthLogoutService.logout(params));
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<String> logoutKakao(@RequestHeader("Authorization") String accessToken) {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("client_id", kakaoClientId);
+        params.add("logout_redirect_uri", kakaoLogoutRedirectUrl);
+//        params.add("state", "your_unique_state_value"); // CSRF 방지를 위한 임의의 문자열
+
+        // 로그아웃 URL 생성
+        String url = "https://kauth.kakao.com/oauth/logout" + "?" +
+                params.entrySet().stream()
+                        .map(entry -> entry.getKey() + "=" + entry.getValue().get(0))
+                        .reduce((p1, p2) -> p1 + "&" + p2)
+                        .orElse("");
+
+        // 로그아웃 요청
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+        if (response.getStatusCode() == HttpStatus.FOUND) {
+            // 로그아웃이 성공적으로 수행되었을 경우
+            return new ResponseEntity<>("logout success", HttpStatus.OK);
+        } else {
+            // 로그아웃이 실패한 경우
+            return new ResponseEntity<>("fail logout", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

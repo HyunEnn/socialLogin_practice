@@ -8,10 +8,9 @@ import social.logintest.domain.OAuthProvider;
 
 @Getter
 @NoArgsConstructor
-public class NaverLoginParams implements OAuthLoginParams {
-    private String authorizationCode;
-    private String state;
-
+public class NaverLogoutParams implements OAuthLogoutParams {
+    private String accessToken;
+    private String serviceProvider;
 
     @Override
     public OAuthProvider oAuthProvider() {
@@ -19,10 +18,10 @@ public class NaverLoginParams implements OAuthLoginParams {
     }
 
     @Override
-    public MultiValueMap<String, String> makeBody() {
+    public MultiValueMap<String, String> makebody() {
         LinkedMultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("code", authorizationCode);
-        body.add("state", state);
+        body.add("access_token", accessToken);
+        body.add("service_provider", serviceProvider);
         return body;
     }
 }

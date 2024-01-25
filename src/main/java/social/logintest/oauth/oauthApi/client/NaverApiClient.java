@@ -11,6 +11,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import social.logintest.domain.OAuthProvider;
 import social.logintest.oauth.oauthApi.params.OAuthLoginParams;
+import social.logintest.oauth.oauthApi.params.OAuthLogoutParams;
 import social.logintest.oauth.oauthApi.response.NaverInfoResponse;
 import social.logintest.oauth.oauthApi.response.OAuthInfoResponse;
 import social.logintest.oauth.tokens.NaverTokens;
@@ -19,6 +20,7 @@ import social.logintest.oauth.tokens.NaverTokens;
 @RequiredArgsConstructor
 public class NaverApiClient implements OAuthApiClient{
     private static final String GRANT_TYPE = "authorization_code";
+    private static final String DELETE_GRANT = "delete"; // 토큰 삭제용 grant
 
     @Value("${oauth.naver.url.auth}")
     private String authUrl;
@@ -73,5 +75,24 @@ public class NaverApiClient implements OAuthApiClient{
 
         return restTemplate.postForObject(url, request, NaverInfoResponse.class);
     }
+
+    @Override
+    public RevokeTokenResponseDto revokeAccessToken(OAuthLogoutParams params) {
+        String url = authUrl + "/oauth2.0/token";
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> body = params.makebody();
+        body.add("grant_type", DELETE_GRANT);
+        body.add("client_id", clientId);
+        body.add("client_secret", clientSecret);
+
+        HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
+
+        return restTemplate.postForObject(url, request, RevokeTokenResponseDto.class);
+    }
+
+
 }
 

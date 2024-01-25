@@ -3,7 +3,7 @@ package social.logintest.oauth.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import social.logintest.domain.Member;
-import social.logintest.oauth.oauthApi.RequestOAuthInfoService;
+import social.logintest.oauth.oauthApi.response.RequestOAuthInfoService;
 import social.logintest.oauth.oauthApi.params.OAuthLoginParams;
 import social.logintest.oauth.oauthApi.response.OAuthInfoResponse;
 import social.logintest.oauth.tokens.AuthTokens;
@@ -27,6 +27,7 @@ public class OAuthLoginService {
         return authTokensGenerator.generate(memberId);
         // JWT 토큰으로 엑세스 토큰, 리프래쉬 토큰이 만들어져서 리턴된다
     }
+
 
     private Long findOrCreateMember(OAuthInfoResponse oAuthInfoResponse) {
         return memberRepository.findByEmail(oAuthInfoResponse.getEmail())
