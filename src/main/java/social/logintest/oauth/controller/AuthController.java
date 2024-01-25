@@ -17,7 +17,7 @@ import social.logintest.oauth.tokens.AuthTokens;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/users")
 public class AuthController {
     private final OAuthLoginService oAuthLoginService;
     private final OAuthLogoutService oAuthLogoutService;
@@ -30,22 +30,22 @@ public class AuthController {
     @Value("${oauth.kakao.url.redirect}")
     private String kakaoLogoutRedirectUrl;
 
-    @PostMapping("/kakao")
+    @PostMapping("/login/kakao")
     public ResponseEntity<AuthTokens> loginKakao(@RequestBody KakaoLoginParams params) {
         return ResponseEntity.ok(oAuthLoginService.login(params));
     }
 
-    @PostMapping("/naver")
+    @PostMapping("/login/naver")
     public ResponseEntity<AuthTokens> loginNaver(@RequestBody NaverLoginParams params) {
         return ResponseEntity.ok(oAuthLoginService.login(params));
     }
 
-    @PostMapping("/naver/logout")
+    @PostMapping("/logout/naver")
     public ResponseEntity<RevokeTokenResponseDto> logoutNaver(@RequestBody NaverLogoutParams params) {
         return ResponseEntity.ok(oAuthLogoutService.logout(params));
     }
 
-    @GetMapping("/logout")
+    @GetMapping("/logout/kakao")
     public ResponseEntity<String> logoutKakao(@RequestHeader("Authorization") String accessToken) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("client_id", kakaoClientId);
